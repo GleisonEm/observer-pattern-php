@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "sqlitemova",
+            "database": "${workspaceFolder:mova-2021-Outubro}/database.sqlite"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
