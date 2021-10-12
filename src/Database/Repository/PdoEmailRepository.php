@@ -33,7 +33,19 @@ class PdoEmailRepository implements \SplSubject, EmailRepository
         return array_merge($group, $all);
     }
 
-    public function add(Email $email): bool
+    public function update(Email $email): bool
+    {
+        $id = $email->id();
+        $sql = 'UPDATE emails SET status = :status WHERE id = :id';
+        $query_update = $this->connection->prepare($sql);
+        $status = $email->status();
+        $query_update->bindValue(':status', $status);
+        $query_update->bindValue(':id', $id, PDO::PARAM_INT);
+
+        return $query_update->execute();
+    }
+
+    public function add(Email $email): Email
     {
         $insert = "INSERT INTO emails (title, content, creator_id, receiver_id, date_created) VALUES (
             '{$email->title()}',
@@ -44,10 +56,13 @@ class PdoEmailRepository implements \SplSubject, EmailRepository
         );";
 
         $success = $this->connection->exec($insert);
-        $email->defineId($this->connection->lastInsertId());
+        if ($success) {
+            $email->defineId($this->connection->lastInsertId());
+        }
+
         $this->notify("email:created", $email);
 
-        return boolval($success);
+        return $email;
     }
 
     public function attach(\SplObserver $observer, string $event = "*"): void
