@@ -40,6 +40,7 @@ $createTables = '
         content TEXT,
         creator_id INTEGER,
         receiver_id INTEGER,
+        status TEXT,
         date_created TEXT,
         FOREIGN KEY(creator_id) REFERENCES users (id),
         FOREIGN KEY(receiver_id) REFERENCES users (id)
@@ -103,8 +104,11 @@ $email = new Email(
     new \DateTimeImmutable('2021-10-10'),
 );
 
-$repository = new PdoEmailRepository($pdo_connection);
-$repository->attach(new NotifyNewEmail(), 'email:created');
-$repository->add($email);
+$repository_email = new PdoEmailRepository($pdo_connection);
+$repository_email->attach(new NotifyNewEmail(), 'email:created');
+$email = $repository_email->add($email);
+$email->defineStatus('notified');
+
+$repository_email->update($email);
 
 echo "Me contrata ai chefia\n";
