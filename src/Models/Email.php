@@ -69,4 +69,9 @@ class Email
 
         $this->id = $id;
     }
+
+    public function defineStatus(string $status): void
+    {
+        $this->status = $status;
+    }
 }
